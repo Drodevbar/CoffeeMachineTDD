@@ -1,6 +1,6 @@
-### Źródło: https://github.com/luisrovirosa/katas-php/tree/master/coffee-machine
+### Source: https://github.com/luisrovirosa/katas-php/tree/master/coffee-machine
 
-Odpalanie testów:
+Running tests:
 ```
 docker-compose up
 ```
