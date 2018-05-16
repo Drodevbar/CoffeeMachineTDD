@@ -15,14 +15,20 @@ class Order
     private $orderedSugarNumber;
 
     /**
+     * @var bool
+     */
+    private $extraHot;
+
+    /**
      * @var string
      */
     private $message;
 
-    public function __construct(Drink $drink, int $orderedSugarNumber = 0)
+    public function __construct(Drink $drink, int $orderedSugarNumber = 0, bool $extraHot = false)
     {
         $this->drink = $drink;
         $this->orderedSugarNumber = $orderedSugarNumber;
+        $this->extraHot = $extraHot;
     }
 
     public function getDrink() : Drink
@@ -38,6 +44,11 @@ class Order
     public function isStickIncluded() : bool
     {
         return $this->getOrderedSugarNumber() > 0;
+    }
+
+    public function isExtraHot() : bool
+    {
+        return $this->extraHot;
     }
 
     public function setMessage(string $message)

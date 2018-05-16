@@ -24,11 +24,21 @@ class CoffeeMachine
      */
     private $moneyInserted;
 
+    /**
+     * @var bool
+     */
+    private $extraHotDrinkOrdered;
+
+    public function __construct()
+    {
+        $this->extraHotDrinkOrdered = false;
+    }
+
     public function make(string $input) : Order
     {
         $orderParts = explode(":", $input);
 
-        $this->drink = new Drink($orderParts[0]);
+        $this->makeDrink($orderParts[0]);
 
         if ($this->drink->equals(Drink::NO_DRINK())) {
             return $this->getOrderForNoDrink($orderParts[1]);
@@ -37,6 +47,23 @@ class CoffeeMachine
         $this->initialize($orderParts);
 
         return $this->getValidatedOrder();
+    }
+
+    private function makeDrink(string $drinkType) : void
+    {
+        $this->drink = new Drink($drinkType[0]);
+
+        if ($this->isDrinkExtraHot($drinkType)) {
+            if ($this->drink->equals(Drink::ORANGE_JUICE())) {
+                throw new \LogicException("An orange juice can not be hot");
+            }
+            $this->extraHotDrinkOrdered = true;
+        }
+    }
+
+    private function isDrinkExtraHot(string $drinkType) : bool
+    {
+        return (isset($drinkType[1]) && $drinkType[1] === 'h');
     }
 
     private function getOrderForNoDrink(string $message) : Order
@@ -62,7 +89,7 @@ class CoffeeMachine
     private function getValidatedOrder() : Order
     {
         if ($this->cashier->isEnoughMoney()) {
-            return new Order($this->drink, $this->orderedSugarNumber);
+            return new Order($this->drink, $this->orderedSugarNumber, $this->extraHotDrinkOrdered);
         }
         $order = new Order(Drink::NO_DRINK());
         $order->setMessage($this->cashier->getMissingMoneyMessage());

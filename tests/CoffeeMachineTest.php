@@ -66,6 +66,50 @@ class CoffeeMachineTest extends TestCase
         $this->assertContains("0.4", $order->getMessage());
     }
 
+    /**
+     * @test
+     */
+    public function itMakesOrangeJuice()
+    {
+        $order = $this->makeOrder("O:0:0.6");
+
+        $this->assertEquals(Drink::ORANGE_JUICE(), $order->getDrink());
+    }
+
+    /**
+     * @test
+     */
+    public function itMakesExtraHotCoffeeWithNoSugar()
+    {
+        $order = $this->makeOrder("Ch:0:0.6");
+
+        $this->assertEquals(Drink::COFFEE(), $order->getDrink());
+        $this->assertEquals(true, $order->isExtraHot());
+        $this->assertEquals(0, $order->getOrderedSugarNumber());
+    }
+
+    /**
+     * @test
+     */
+    public function itMakesExtraHotChocolateWithOneSugarAndAStick()
+    {
+        $order = $this->makeOrder("Hh:1:0.5");
+
+        $this->assertEquals(Drink::CHOCOLATE(), $order->getDrink());
+        $this->assertEquals(true, $order->isExtraHot());
+        $this->assertEquals(1, $order->getOrderedSugarNumber());
+        $this->assertEquals(true, $order->isStickIncluded());
+    }
+
+    /**
+     * @test
+     * @expectedException \LogicException
+     */
+    public function itThrowsExceptionWhenHotOrangeJuiceOrdered()
+    {
+        $this->makeOrder("Oh:0:0.7");
+    }
+
     private function makeOrder(string $order) : Order
     {
         $coffeeMachine = new CoffeeMachine();
