@@ -40,7 +40,7 @@ class Order
         return $this->getOrderedSugarNumber() > 0;
     }
 
-    public function setMessage(string $message) : void
+    public function setMessage(string $message)
     {
         $this->message = $message;
     }

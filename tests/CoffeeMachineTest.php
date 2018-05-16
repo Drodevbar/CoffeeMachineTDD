@@ -14,11 +14,11 @@ class CoffeeMachineTest extends TestCase
      */
     public function itMakesTeaWithOneSugarAndAStick()
     {
-        $tea = $this->makeOrder("T:1:0");
+        $order = $this->makeOrder("T:1:0.4");
 
-        $this->assertEquals(Drink::TEA(), $tea->getDrink());
-        $this->assertEquals(1, $tea->getOrderedSugarNumber());
-        $this->assertEquals(true, $tea->isStickIncluded());
+        $this->assertEquals(Drink::TEA(), $order->getDrink());
+        $this->assertEquals(1, $order->getOrderedSugarNumber());
+        $this->assertEquals(true, $order->isStickIncluded());
     }
 
     /**
@@ -26,11 +26,11 @@ class CoffeeMachineTest extends TestCase
      */
     public function itMakesChocolateWithNoSugarAndNoStick()
     {
-        $chocolate = $this->makeOrder("H::");
+        $order = $this->makeOrder("H::0.5");
 
-        $this->assertEquals(Drink::CHOCOLATE(), $chocolate->getDrink());
-        $this->assertEquals(0, $chocolate->getOrderedSugarNumber());
-        $this->assertEquals(false, $chocolate->isStickIncluded());
+        $this->assertEquals(Drink::CHOCOLATE(), $order->getDrink());
+        $this->assertEquals(0, $order->getOrderedSugarNumber());
+        $this->assertEquals(false, $order->isStickIncluded());
     }
 
     /**
@@ -38,11 +38,22 @@ class CoffeeMachineTest extends TestCase
      */
     public function itMakesCoffeeWithTwoSugarsAndAStick()
     {
-        $coffee = $this->makeOrder("C:2:0");
+        $order = $this->makeOrder("C:2:0.6");
 
-        $this->assertEquals(Drink::COFFEE(), $coffee->getDrink());
-        $this->assertEquals(2, $coffee->getOrderedSugarNumber());
-        $this->assertEquals(true, $coffee->isStickIncluded());
+        $this->assertEquals(Drink::COFFEE(), $order->getDrink());
+        $this->assertEquals(2, $order->getOrderedSugarNumber());
+        $this->assertEquals(true, $order->isStickIncluded());
+    }
+
+    /**
+     * @test
+     */
+    public function itDoesNotMakeDrinkForNotEnoughMoneyInserted()
+    {
+        $order = $this->makeOrder("C:0:0.2");
+
+        $this->assertEquals(Drink::NO_DRINK(), $order->getDrink());
+        $this->assertContains("0.4", $order->getMessage());
     }
 
     /**
@@ -50,9 +61,9 @@ class CoffeeMachineTest extends TestCase
      */
     public function itForwardsMessage()
     {
-        $message = $this->makeOrder("M:Hello-World!");
+        $order = $this->makeOrder("M:Hello-World!");
 
-        $this->assertEquals("Hello-World!", $message->getMessage());
+        $this->assertEquals("Hello-World!", $order->getMessage());
     }
 
     private function makeOrder(string $order) : Order
