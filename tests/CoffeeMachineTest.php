@@ -48,22 +48,22 @@ class CoffeeMachineTest extends TestCase
     /**
      * @test
      */
+    public function itForwardsMessage()
+    {
+        $order = $this->makeOrder("M:Hello-World!");
+
+        $this->assertEquals("Hello-World!", $order->getMessage());
+    }
+
+    /**
+     * @test
+     */
     public function itDoesNotMakeDrinkForNotEnoughMoneyInserted()
     {
         $order = $this->makeOrder("C:0:0.2");
 
         $this->assertEquals(Drink::NO_DRINK(), $order->getDrink());
         $this->assertContains("0.4", $order->getMessage());
-    }
-
-    /**
-     * @test
-     */
-    public function itForwardsMessage()
-    {
-        $order = $this->makeOrder("M:Hello-World!");
-
-        $this->assertEquals("Hello-World!", $order->getMessage());
     }
 
     private function makeOrder(string $order) : Order
