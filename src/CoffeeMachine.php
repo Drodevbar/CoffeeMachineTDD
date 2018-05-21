@@ -2,8 +2,21 @@
 
 namespace CoffeeMachine;
 
+use CoffeeMachine\Services\BeverageQuantityChecker;
+use CoffeeMachine\Services\EmailNotifier;
+
 class CoffeeMachine
 {
+    /**
+     * @var BeverageQuantityChecker
+     */
+    private $beverageQuantityChecker;
+
+    /**
+     * @var EmailNotifier
+     */
+    private $emailNotifier;
+
     /**
      * @var Registry
      */
@@ -34,10 +47,12 @@ class CoffeeMachine
      */
     private $extraHotDrinkOrdered;
 
-    public function __construct()
+    public function __construct(BeverageQuantityChecker $checker, EmailNotifier $notifier)
     {
-        $this->extraHotDrinkOrdered = false;
         $this->registry = new Registry();
+        $this->beverageQuantityChecker = $checker;
+        $this->emailNotifier = $notifier;
+        $this->extraHotDrinkOrdered = false;
     }
 
     public function make(string $input) : Order
@@ -94,13 +109,21 @@ class CoffeeMachine
 
     private function getSugarNumber(string $number) : int
     {
-        return ((int)$number > 0) ? $number : 0;
+        return ((int) $number > 0) ? $number : 0;
     }
 
     private function makeOrder() : Order
     {
+        if ($this->beverageQuantityChecker->isEmpty($this->drink)) {
+            $this->emailNotifier->notifyMissingDrink($this->drink);
+            $order = new Order(Drink::NO_DRINK());
+            $order->setMessage("Out of resources");
+
+            return $order;
+        }
         if ($this->cashier->isEnoughMoney()) {
             $this->registry->addToRegistry($this->drink, $this->cashier);
+
             return new Order($this->drink, $this->orderedSugarNumber, $this->extraHotDrinkOrdered);
         }
         $order = new Order(Drink::NO_DRINK());
