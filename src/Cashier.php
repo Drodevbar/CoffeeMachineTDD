@@ -17,7 +17,7 @@ final class Cashier
     /**
      * @var float
      */
-    private $money;
+    private $moneyGiven;
 
     /**
      * @var float
@@ -27,18 +27,18 @@ final class Cashier
     public function __construct(Drink $drink, float $money)
     {
         $this->drink = $drink;
-        $this->money = $money;
-        $this->orderedDrinkPrice = $this->getDrinkPrice();
+        $this->moneyGiven = $money;
+        $this->orderedDrinkPrice = $this->getPriceForDrink($this->drink);
     }
 
     public function isEnoughMoney() : bool
     {
-        return ($this->money >= $this->orderedDrinkPrice);
+        return ($this->moneyGiven >= $this->orderedDrinkPrice);
     }
 
     public function getMissingMoneyMessage() : string
     {
-        $missingMoney = $this->orderedDrinkPrice - $this->money;
+        $missingMoney = $this->orderedDrinkPrice - $this->moneyGiven;
 
         if ($missingMoney > 0) {
             return "Missing money: {$missingMoney}";
@@ -46,9 +46,9 @@ final class Cashier
         throw new \LogicException("No money is missing");
     }
 
-    private function getDrinkPrice() : float
+    public function getPriceForDrink(Drink $drink) : float
     {
-        switch ($this->drink) {
+        switch ($drink) {
             case Drink::TEA():
                 return self::TEA_PRICE;
             case Drink::COFFEE():

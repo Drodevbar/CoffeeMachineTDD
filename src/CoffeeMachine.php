@@ -5,6 +5,11 @@ namespace CoffeeMachine;
 class CoffeeMachine
 {
     /**
+     * @var Registry
+     */
+    private $registry;
+
+    /**
      * @var Cashier
      */
     private $cashier;
@@ -32,6 +37,7 @@ class CoffeeMachine
     public function __construct()
     {
         $this->extraHotDrinkOrdered = false;
+        $this->registry = new Registry();
     }
 
     public function make(string $input) : Order
@@ -46,7 +52,12 @@ class CoffeeMachine
 
         $this->initialize($orderParts);
 
-        return $this->getValidatedOrder();
+        return $this->makeOrder();
+    }
+
+    public function getRegistry() : Registry
+    {
+        return $this->registry;
     }
 
     private function makeDrink(string $drinkType) : void
@@ -86,9 +97,10 @@ class CoffeeMachine
         return ((int)$number > 0) ? $number : 0;
     }
 
-    private function getValidatedOrder() : Order
+    private function makeOrder() : Order
     {
         if ($this->cashier->isEnoughMoney()) {
+            $this->registry->addToRegistry($this->drink, $this->cashier);
             return new Order($this->drink, $this->orderedSugarNumber, $this->extraHotDrinkOrdered);
         }
         $order = new Order(Drink::NO_DRINK());

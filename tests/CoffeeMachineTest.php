@@ -110,6 +110,51 @@ class CoffeeMachineTest extends TestCase
         $this->makeOrder("Oh:0:0.7");
     }
 
+    /**
+     * @test
+     */
+    public function itMakesReportForOneTea()
+    {
+        $coffeeMachine = new CoffeeMachine();
+
+        $coffeeMachine->make("T:0:0.4");
+
+        $this->assertEquals(0.4, $coffeeMachine->getRegistry()->getBalance());
+        $this->assertContains("tea:1", $coffeeMachine->getRegistry()->getReport());
+    }
+
+    /**
+     * @test
+     */
+    public function itMakesReportForTwoTeas()
+    {
+        $coffeeMachine = new CoffeeMachine();
+
+        $coffeeMachine->make("T:0:0.4");
+        $coffeeMachine->make("T:0:0.4");
+
+        $this->assertEquals(0.8, $coffeeMachine->getRegistry()->getBalance());
+        $this->assertContains("tea:2", $coffeeMachine->getRegistry()->getReport());
+    }
+
+    /**
+     * @test
+     */
+    public function itMakesReportForThreeTeasAndChocolateAndOrangeJuice()
+    {
+        $coffeeMachine = new CoffeeMachine();
+
+        $coffeeMachine->make("T:0:0.4");
+        $coffeeMachine->make("T:0:0.4");
+        $coffeeMachine->make("H:0:0.5");
+        $coffeeMachine->make("O:0:0.6");
+
+        $this->assertEquals(1.9, $coffeeMachine->getRegistry()->getBalance());
+        $this->assertContains("tea:2", $coffeeMachine->getRegistry()->getReport());
+        $this->assertContains("chocolate:1", $coffeeMachine->getRegistry()->getReport());
+        $this->assertContains("orange_juice:1", $coffeeMachine->getRegistry()->getReport());
+    }
+
     private function makeOrder(string $order) : Order
     {
         $coffeeMachine = new CoffeeMachine();
