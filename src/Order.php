@@ -29,6 +29,7 @@ class Order
         $this->drink = $drink;
         $this->orderedSugarNumber = $orderedSugarNumber;
         $this->extraHot = $extraHot;
+        $this->message = "";
     }
 
     public function getDrink() : Drink
