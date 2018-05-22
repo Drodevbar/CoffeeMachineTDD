@@ -62,7 +62,7 @@ class CoffeeMachine
         $this->makeDrink($orderParts[0]);
 
         if ($this->drink->equals(Drink::NO_DRINK())) {
-            return $this->getOrderForNoDrink($orderParts[1]);
+            return $this->getOrderWithoutDrinkWithMessage($orderParts[1]);
         }
 
         $this->initialize($orderParts);
@@ -92,7 +92,7 @@ class CoffeeMachine
         return (isset($drinkType[1]) && $drinkType[1] === 'h');
     }
 
-    private function getOrderForNoDrink(string $message) : Order
+    private function getOrderWithoutDrinkWithMessage(string $message) : Order
     {
         $order = new Order(Drink::NO_DRINK());
         $order->setMessage($message);
@@ -116,19 +116,14 @@ class CoffeeMachine
     {
         if ($this->beverageQuantityChecker->isEmpty($this->drink)) {
             $this->emailNotifier->notifyMissingDrink($this->drink);
-            $order = new Order(Drink::NO_DRINK());
-            $order->setMessage("Out of resources");
 
-            return $order;
+            return $this->getOrderWithoutDrinkWithMessage("Out of resources");
         }
         if ($this->cashier->isEnoughMoney()) {
             $this->registry->addToRegistry($this->drink, $this->cashier);
 
             return new Order($this->drink, $this->orderedSugarNumber, $this->extraHotDrinkOrdered);
         }
-        $order = new Order(Drink::NO_DRINK());
-        $order->setMessage($this->cashier->getMissingMoneyMessage());
-
-        return $order;
+        return $this->getOrderWithoutDrinkWithMessage($this->cashier->getMissingMoneyMessage());
     }
 }

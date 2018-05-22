@@ -180,14 +180,14 @@ class CoffeeMachineTest extends TestCase
         $beverageQuantityChecker = Mockery::mock(BeverageQuantityChecker::class);
         $beverageQuantityChecker
             ->shouldReceive("isEmpty")
-            ->with(Drink::TEA())
+            ->with(Mockery::any())
             ->once()
             ->andReturnTrue();
 
         $emailNotifier = Mockery::mock(EmailNotifier::class);
         $emailNotifier
             ->shouldReceive("notifyMissingDrink")
-            ->with(Drink::TEA())
+            ->with(Mockery::any())
             ->once();
 
         $outOfResourcesCoffeeMachine = new CoffeeMachine($beverageQuantityChecker, $emailNotifier);
