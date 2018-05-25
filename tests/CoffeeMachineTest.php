@@ -2,10 +2,10 @@
 
 namespace CoffeeMachine\Tests;
 
-use CoffeeMachine\CoffeeMachine;
 use CoffeeMachine\Drink;
-use CoffeeMachine\Services\BeverageQuantityChecker;
+use CoffeeMachine\CoffeeMachine;
 use CoffeeMachine\Services\EmailNotifier;
+use CoffeeMachine\Services\BeverageQuantityChecker;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
@@ -21,7 +21,6 @@ class CoffeeMachineTest extends TestCase
         $beverageQuantityChecker = Mockery::mock(BeverageQuantityChecker::class);
         $beverageQuantityChecker
             ->shouldReceive("isEmpty")
-            ->once()
             ->andReturnFalse();
 
         $emailNotifier = Mockery::mock(EmailNotifier::class);
@@ -30,6 +29,11 @@ class CoffeeMachineTest extends TestCase
             ->never();
 
         $this->coffeeMachine = new CoffeeMachine($beverageQuantityChecker, $emailNotifier);
+    }
+
+    public function tearDown()
+    {
+        Mockery::close();
     }
 
     /**
@@ -180,15 +184,18 @@ class CoffeeMachineTest extends TestCase
         $beverageQuantityChecker = Mockery::mock(BeverageQuantityChecker::class);
         $beverageQuantityChecker
             ->shouldReceive("isEmpty")
-            ->with(Mockery::any())
             ->once()
-            ->andReturnTrue();
+            ->andReturnUsing(function (Drink $drinkType) {
+                return Drink::TEA()->equals($drinkType);
+            });
 
         $emailNotifier = Mockery::mock(EmailNotifier::class);
         $emailNotifier
             ->shouldReceive("notifyMissingDrink")
-            ->with(Mockery::any())
-            ->once();
+            ->once()
+            ->andReturnUsing(function (Drink $drinkType) {
+                $this->assertEquals(Drink::TEA(), $drinkType);
+            });
 
         $outOfResourcesCoffeeMachine = new CoffeeMachine($beverageQuantityChecker, $emailNotifier);
 
