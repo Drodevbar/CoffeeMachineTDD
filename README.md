@@ -1,6 +1,6 @@
 ### Source: https://github.com/luisrovirosa/katas-php/tree/master/coffee-machine
 
-Running tests:
+Running tests and CodeSniffer in Docker container:
 ```
 docker-compose up
 ```
